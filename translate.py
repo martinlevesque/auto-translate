@@ -13,8 +13,9 @@ with sync_playwright() as p:
     )
     page = browser.new_page()
     page.goto('https://www.phind.com/')
+    page.set_default_timeout(120*1000)
     page.get_by_role('checkbox', name="Use Best Model (slow)").click()
-    input_query = '''Please translate the following yml to french, and make sure to not translate the variable names, but only the values:en:
+    input_query = '''translate the following yml to french with no explanation, and make sure to not translate the variable names, but only the values, also only provide one code snippet:en:
   views:
     test: "Hello world"
     test2: "What is that?"
@@ -22,7 +23,8 @@ with sync_playwright() as p:
       deep: 23'''
     page.get_by_placeholder('Ask anything. Supports code blocks and urls.').fill(input_query)
     page.get_by_role("button", name="Search").click()
-    time.sleep(30)
+    page.wait_for_selector('.fe-thumbs-up')
+    page.wait_for_selector('.fe-refresh-cw')
     contentt = page.locator(".language-yaml").text_content()
     print(f"content = {contentt}")
     browser.close()
