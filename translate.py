@@ -1,30 +1,25 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import argparse
+import sys
+from ai_implementations import phind
+from translating_formats import yml as yml_module
 
-import time
-from playwright.sync_api import sync_playwright
+implementations = {
+    'phind': phind,
+}
+translating_formats = {
+    'yml': yml_module,
+}
 
-with sync_playwright() as p:
-    browser = p.firefox.launch(headless=False)
-    context = browser.new_context(
-        extra_http_headers={
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0"
-        }
-    )
-    page = browser.new_page()
-    page.goto('https://www.phind.com/')
-    page.set_default_timeout(120*1000)
-    page.get_by_role('checkbox', name="Use Best Model (slow)").click()
-    input_query = '''translate the following yml to french with no explanation, and make sure to not translate the variable names, but only the values, also only provide one code snippet:en:
-  views:
-    test: "Hello world"
-    test2: "What is that?"
-    more:
-      deep: 23'''
-    page.get_by_placeholder('Ask anything. Supports code blocks and urls.').fill(input_query)
-    page.get_by_role("button", name="Search").click()
-    page.wait_for_selector('.fe-thumbs-up')
-    page.wait_for_selector('.fe-refresh-cw')
-    contentt = page.locator(".language-yaml").text_content()
-    print(f"content = {contentt}")
-    browser.close()
+cmd_line_parser = argparse.ArgumentParser(description='Translate a text file from one language to another.')
+cmd_line_parser.add_argument('--lang', default="french")
+cmd_line_parser.add_argument('--impl', default="phind", dest="implementation")
+
+args = cmd_line_parser.parse_args()
+
+implementation = implementations[args.implementation]
+
+stdin_content = sys.stdin.read()
+
+chunks = translating_formats['yml'].prepare_chunks(stdin_content, implementation.CHUNK_SIZE_LIMIT)
+
+implementation.translate(chunks, target_language=args.lang)
