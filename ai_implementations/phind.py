@@ -9,7 +9,7 @@ CHUNK_SIZE_LIMIT = 500
 
 
 def extract_begin_whitespace(line):
-    pattern = r'^[\s]+'
+    pattern = r"^[\s]+"
 
     match = re.match(pattern, line)
 
@@ -31,18 +31,26 @@ def resolve_chunk(chunk, target_language=None):
             }
         )
         page = context.new_page()
-        page.goto('https://www.phind.com/')
+        page.goto("https://www.phind.com/")
         page.set_default_timeout(60 * 2 * 1000)
-        page.get_by_role('checkbox', name="Use Best Model (slow)").click()  # TERMS_SEPARATOR
-        input_query = f'''translate the following text into {target_language}. only provide a single code block containing the translations separated by {TERMS_SEPARATOR} with no other text. Again just one code block with the translations only:
-{chunk['content']}'''
-        page.get_by_placeholder('Ask anything. Supports code blocks and urls.').fill(input_query)
+        page.get_by_role(
+            "checkbox", name="Use Best Model (slow)"
+        ).click()  # TERMS_SEPARATOR
+        input_query = f"""translate the following text into {target_language}. only provide a single code block containing the translations separated by {TERMS_SEPARATOR} with no other text. Again just one code block with the translations only:
+{chunk['content']}"""
+        page.get_by_placeholder("Ask anything. Supports code blocks and urls.").fill(
+            input_query
+        )
         page.get_by_role("button", name="Search").click()
-        page.wait_for_selector('.fe-thumbs-up')
-        page.wait_for_selector('.fe-refresh-cw')
+        page.wait_for_selector(".fe-thumbs-up")
+        page.wait_for_selector(".fe-refresh-cw")
         tmp_current_chunk_result = page.locator("pre").text_content()
 
-        result_lines = [l.strip() for l in tmp_current_chunk_result.split(TERMS_SEPARATOR) if l.strip() != ""]
+        result_lines = [
+            l.strip()
+            for l in tmp_current_chunk_result.split(TERMS_SEPARATOR)
+            if l.strip() != ""
+        ]
 
         browser.close()
 
@@ -55,7 +63,7 @@ def translate(chunks, translating_format="yml", target_language=None):
     for chunk in chunks:
         resolved_lines = resolve_chunk(chunk, target_language=target_language)
         translated_chunk = copy.deepcopy(chunk)
-        translated_chunk['resolved_lines'] = resolved_lines
+        translated_chunk["resolved_lines"] = resolved_lines
         resulting_chunks.append(translated_chunk)
 
     return resulting_chunks
