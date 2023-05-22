@@ -1,7 +1,11 @@
 import argparse
 import sys
+import json
 from ai_implementations import phind
 from translating_formats import yml as yml_module
+
+## TODO
+# please translate the following text into french (make sure to keep the four dashes), put the translation in a code snippet block in containing raw format with the translation only:----
 
 implementations = {
     'phind': phind,
@@ -22,4 +26,8 @@ stdin_content = sys.stdin.read()
 
 chunks = translating_formats['yml'].prepare_chunks(stdin_content, implementation.CHUNK_SIZE_LIMIT)
 
-implementation.translate(chunks, target_language=args.lang)
+print(f"chunks = {json.dumps(chunks, indent=4)}")
+
+#resulting_chunks = implementation.translate(chunks, target_language=args.lang)
+
+#print(translating_formats['yml'].format_final_yml(resulting_chunks))
