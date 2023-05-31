@@ -14,7 +14,6 @@ def iterate_recursive_ordered(data, path=None, result=[], variable_id=None):
             if isinstance(value, (dict, list)):
                 iterate_recursive_ordered(value, path=new_path, result=result)
             else:
-                print(f"appending... key {key}, value {value}, data -> {data}")
                 result.append(
                     {
                         "path": copy.deepcopy(new_path),
@@ -32,9 +31,6 @@ def iterate_recursive_ordered(data, path=None, result=[], variable_id=None):
             if isinstance(value, (dict, list)):
                 iterate_recursive_ordered(value, path=new_path, result=result)
             else:
-                print(
-                    f"appending case 2..., value {value}, data -> {data}, index {index}"
-                )
                 result.append(
                     {
                         "path": copy.deepcopy(new_path),
@@ -87,15 +83,12 @@ def prepare_chunks(content, chunk_size):
 def format_final_yml(resulting_chunks, original_yml):
 
     for chunk in resulting_chunks:
-        print(f"-------------")
-        print(f"chunk: {chunk}")
         index_line = 0
 
         for line in chunk["lines"]:
             resolve_line = chunk["resolved_lines"][index_line]
-            line['data_ref'][line['key_ref']] = resolve_line
-            print(f"new dict result {original_yml}")
+            line["data_ref"][line["key_ref"]] = resolve_line
 
             index_line += 1
 
-    return yaml.dump(original_yml, allow_unicode=True)
+    return yaml.safe_dump(original_yml, allow_unicode=True)

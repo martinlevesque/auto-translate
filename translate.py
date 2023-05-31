@@ -1,15 +1,10 @@
 import argparse
 import sys
-import json
-from ai_implementations import phind
+import implementations
+import pkgutil
+import importlib
 from translating_formats import yml as yml_module
 
-## TODO
-# please translate the following text into french (make sure to keep the four dashes), put the translation in a code snippet block in containing raw format with the translation only:----
-
-implementations = {
-    "phind": phind,
-}
 translating_formats = {
     "yml": yml_module,
 }
@@ -22,16 +17,24 @@ cmd_line_parser.add_argument("--impl", default="phind", dest="implementation")
 
 args = cmd_line_parser.parse_args()
 
-implementation = implementations[args.implementation]
+submodules = {
+    name: importlib.import_module("." + name, implementations.__name__)
+    for _, name, _ in pkgutil.iter_modules(implementations.__path__)
+}
+
+
+print(f"submodules = {submodules}")
+submodule = submodules[args.implementation]
+implementation = submodule.Klass(target_language=args.lang)
+
+print(f"implementation = {implementation}")
 
 stdin_content = sys.stdin.read()
 
 chunks, original_yaml = translating_formats["yml"].prepare_chunks(
-    stdin_content, implementation.CHUNK_SIZE_LIMIT
+    stdin_content, submodule.CHUNK_SIZE_LIMIT
 )
 
-print(f"chunks = {json.dumps(chunks, indent=4)}")
+resulting_chunks = implementation.translate(chunks)
 
-# resulting_chunks = implementation.translate(chunks, target_language=args.lang)
-
-# print(translating_formats['yml'].format_final_yml(resulting_chunks))
+print(translating_formats["yml"].format_final_yml(resulting_chunks, original_yaml))

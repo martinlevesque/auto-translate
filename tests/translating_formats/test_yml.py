@@ -93,18 +93,18 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
 def test_translating_formats_yml_format_final_yml():
     resulting_chunks, yml_loaded = yml.prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
     original_yaml = copy.deepcopy(yml_loaded)
-    resulting_chunks[0]['resolved_lines'] = ['frvalue1']
-    resulting_chunks[1]['resolved_lines'] = ['frvalue2']
-    resulting_chunks[2]['resolved_lines'] = ['frvalue3']
-    resulting_chunks[3]['resolved_lines'] = ['frvalue4']
-    resulting_chunks[4]['resolved_lines'] = ['frvalue5']
+    resulting_chunks[0]["resolved_lines"] = ["frvalue1"]
+    resulting_chunks[1]["resolved_lines"] = ["frvalue2"]
+    resulting_chunks[2]["resolved_lines"] = ["frvalue3"]
+    resulting_chunks[3]["resolved_lines"] = ["frvalue4"]
+    resulting_chunks[4]["resolved_lines"] = ["frvalue5"]
 
     result_yml = yml.format_final_yml(resulting_chunks, yml_loaded)
 
-    original_yaml['alist'][0] = 'frvalue2'
-    original_yaml['alist'][1] = 'frvalue3'
-    original_yaml['deep_list']['key4'][0]['kk'] = 'frvalue4'
-    original_yaml['deep_list']['key4'][0]['jj'] = 'frvalue5'
-    original_yaml['key1'] = 'frvalue1'
+    original_yaml["alist"][0] = "frvalue2"
+    original_yaml["alist"][1] = "frvalue3"
+    original_yaml["deep_list"]["key4"][0]["kk"] = "frvalue4"
+    original_yaml["deep_list"]["key4"][0]["jj"] = "frvalue5"
+    original_yaml["key1"] = "frvalue1"
 
     assert result_yml == yaml.dump(original_yaml, allow_unicode=True)
