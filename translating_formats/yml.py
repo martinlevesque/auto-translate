@@ -4,7 +4,7 @@ import copy
 from translating_formats.constants import TERMS_SEPARATOR
 
 
-def iterate_recursive_ordered(data, path=None, result=[], variable_id=None):
+def iterate_recursive_ordered(data, path=None, result=[]):
     if path is None:
         path = []
 
@@ -46,10 +46,10 @@ def iterate_recursive_ordered(data, path=None, result=[], variable_id=None):
 
 
 def prepare_chunks(content, chunk_size):
+    print(f"chunk size = {chunk_size}")
     yml_data = yaml.safe_load(content)
     result = []
-    variable_id = 1
-    iterate_recursive_ordered(yml_data, result=result, variable_id=variable_id)
+    iterate_recursive_ordered(yml_data, result=result)
 
     chunks = []
     current_chunk = {"content": "", "lines": []}

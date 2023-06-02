@@ -23,11 +23,8 @@ submodules = {
 }
 
 
-print(f"submodules = {submodules}")
 submodule = submodules[args.implementation]
 implementation = submodule.Klass(target_language=args.lang)
-
-print(f"implementation = {implementation}")
 
 stdin_content = sys.stdin.read()
 
