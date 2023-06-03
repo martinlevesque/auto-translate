@@ -12,7 +12,8 @@ translating_formats = {
 cmd_line_parser = argparse.ArgumentParser(
     description="Translate a text file from one language to another."
 )
-cmd_line_parser.add_argument("--lang", default="french")
+cmd_line_parser.add_argument("--source-lang", default="english")
+cmd_line_parser.add_argument("--target-lang", default="french")
 cmd_line_parser.add_argument("--impl", default="libretranslate", dest="implementation")
 
 args = cmd_line_parser.parse_args()
@@ -24,7 +25,7 @@ submodules = {
 
 
 submodule = submodules[args.implementation]
-implementation = submodule.Klass(target_language=args.lang)
+implementation = submodule.Klass(target_language=args.target_lang, source_language=args.source_lang)
 
 stdin_content = sys.stdin.read()
 

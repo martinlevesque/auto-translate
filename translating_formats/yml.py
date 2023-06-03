@@ -46,7 +46,6 @@ def iterate_recursive_ordered(data, path=None, result=[]):
 
 
 def prepare_chunks(content, chunk_size):
-    print(f"chunk size = {chunk_size}")
     yml_data = yaml.safe_load(content)
     result = []
     iterate_recursive_ordered(yml_data, result=result)
