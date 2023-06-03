@@ -13,7 +13,7 @@ cmd_line_parser = argparse.ArgumentParser(
     description="Translate a text file from one language to another."
 )
 cmd_line_parser.add_argument("--lang", default="french")
-cmd_line_parser.add_argument("--impl", default="phind", dest="implementation")
+cmd_line_parser.add_argument("--impl", default="libretranslate", dest="implementation")
 
 args = cmd_line_parser.parse_args()
 
