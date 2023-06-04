@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 from tenacity import retry, stop_after_attempt
+import langdetect
 
 
 @dataclass
 class Base:
     source_language: str = "en"
     target_language: str = "en"
+
+    def determine_language(text):
+        return langdetect.detect(text) or "en"
 
     def translate(self, chunks):
         raise NotImplementedError()

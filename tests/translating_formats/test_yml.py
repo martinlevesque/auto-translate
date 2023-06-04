@@ -15,11 +15,11 @@ deep_list:
 
 
 def test_translating_formats_yml_prepare_chunks_happy_path():
-    chunks, yml_loaded = yml.prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
+    chunks, yml_loaded = yml.Yml().prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
 
     assert chunks == [
         {
-            "content": "-=-=-\nvalue1\n-=-=-\n",
+            "content": "value1 ",
             "lines": [
                 {
                     "path": ["key1"],
@@ -36,7 +36,7 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             ],
         },
         {
-            "content": "-=-=-\nvalue2\n-=-=-\n",
+            "content": "value2 ",
             "lines": [
                 {
                     "path": ["alist", "index:0"],
@@ -49,7 +49,7 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             ],
         },
         {
-            "content": "-=-=-\nvalue3\n-=-=-\n",
+            "content": "value3 ",
             "lines": [
                 {
                     "path": ["alist", "index:1"],
@@ -62,7 +62,7 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             ],
         },
         {
-            "content": "-=-=-\nvalue4\n-=-=-\n",
+            "content": "value4 ",
             "lines": [
                 {
                     "path": ["deep_list", "key4", "index:0", "kk"],
@@ -75,7 +75,7 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             ],
         },
         {
-            "content": "-=-=-\nvalue5\n-=-=-\n",
+            "content": "value5 ",
             "lines": [
                 {
                     "path": ["deep_list", "key4", "index:0", "jj"],
@@ -91,7 +91,9 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
 
 
 def test_translating_formats_yml_format_final_yml():
-    resulting_chunks, yml_loaded = yml.prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
+    formatter = yml.Yml()
+
+    resulting_chunks, yml_loaded = formatter.prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
     original_yaml = copy.deepcopy(yml_loaded)
     resulting_chunks[0]["resolved_lines"] = ["frvalue1"]
     resulting_chunks[1]["resolved_lines"] = ["frvalue2"]
@@ -99,7 +101,7 @@ def test_translating_formats_yml_format_final_yml():
     resulting_chunks[3]["resolved_lines"] = ["frvalue4"]
     resulting_chunks[4]["resolved_lines"] = ["frvalue5"]
 
-    result_yml = yml.format_final_yml(resulting_chunks, yml_loaded)
+    result_yml = formatter.format_final_yml(resulting_chunks, yml_loaded)
 
     original_yaml["alist"][0] = "frvalue2"
     original_yaml["alist"][1] = "frvalue3"
