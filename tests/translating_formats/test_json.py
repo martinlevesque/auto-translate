@@ -1,21 +1,20 @@
-from translating_formats import yml
-import copy
-import yaml
-
-SIMPLE_SAMPLE_YML_INPUT = """
-key1: value1
-alist:
-    - value2
-    - value3
-deep_list:
-    key4:
-        - kk: value4
-          jj: value5
-"""
+from translating_formats import json as translating_json
+import json
 
 
-def test_translating_formats_yml_prepare_chunks_happy_path():
-    chunks, yml_loaded = yml.Yml().prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
+SIMPLE_SAMPLE_JSON_INPUT = json.dumps(
+    {
+        "key1": "value1",
+        "alist": ["value2", "value3"],
+        "deeplist": {"key4": [{"kk": "value4", "jj": "value5"}]},
+    }
+)
+
+
+def test_translating_formats_json_prepare_chunks_happy_path():
+    chunks, yml_loaded = translating_json.Json().prepare_chunks(
+        SIMPLE_SAMPLE_JSON_INPUT, 10
+    )
 
     assert chunks == [
         {
@@ -27,7 +26,7 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
                     "data_ref": {
                         "key1": "value1",
                         "alist": ["value2", "value3"],
-                        "deep_list": {"key4": [{"kk": "value4", "jj": "value5"}]},
+                        "deeplist": {"key4": [{"kk": "value4", "jj": "value5"}]},
                     },
                     "key_ref": "key1",
                     "str_path": "key1",
@@ -65,11 +64,11 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             "content": "value4 ",
             "lines": [
                 {
-                    "path": ["deep_list", "key4", "index:0", "kk"],
+                    "path": ["deeplist", "key4", "index:0", "kk"],
                     "ref_type": "dict",
                     "data_ref": {"kk": "value4", "jj": "value5"},
                     "key_ref": "kk",
-                    "str_path": "deep_list->key4->index:0->kk",
+                    "str_path": "deeplist->key4->index:0->kk",
                     "original_value": "value4",
                 }
             ],
@@ -78,11 +77,11 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
             "content": "value5 ",
             "lines": [
                 {
-                    "path": ["deep_list", "key4", "index:0", "jj"],
+                    "path": ["deeplist", "key4", "index:0", "jj"],
                     "ref_type": "dict",
                     "data_ref": {"kk": "value4", "jj": "value5"},
                     "key_ref": "jj",
-                    "str_path": "deep_list->key4->index:0->jj",
+                    "str_path": "deeplist->key4->index:0->jj",
                     "original_value": "value5",
                 }
             ],
@@ -90,31 +89,9 @@ def test_translating_formats_yml_prepare_chunks_happy_path():
     ]
 
 
-def test_translating_formats_yml_format_final_yml():
-    formatter = yml.Yml()
-
-    resulting_chunks, yml_loaded = formatter.prepare_chunks(SIMPLE_SAMPLE_YML_INPUT, 10)
-    original_yaml = copy.deepcopy(yml_loaded)
-    resulting_chunks[0]["resolved_lines"] = ["frvalue1"]
-    resulting_chunks[1]["resolved_lines"] = ["frvalue2"]
-    resulting_chunks[2]["resolved_lines"] = ["frvalue3"]
-    resulting_chunks[3]["resolved_lines"] = ["frvalue4"]
-    resulting_chunks[4]["resolved_lines"] = ["frvalue5"]
-
-    result_yml = formatter.format_final_yml(resulting_chunks, yml_loaded)
-
-    original_yaml["alist"][0] = "frvalue2"
-    original_yaml["alist"][1] = "frvalue3"
-    original_yaml["deep_list"]["key4"][0]["kk"] = "frvalue4"
-    original_yaml["deep_list"]["key4"][0]["jj"] = "frvalue5"
-    original_yaml["key1"] = "frvalue1"
-
-    assert result_yml == yaml.dump(original_yaml, allow_unicode=True)
+def test_translating_formats_json_is_proper_format_happy_path():
+    assert translating_json.Json.is_proper_format(SIMPLE_SAMPLE_JSON_INPUT)
 
 
-def test_translating_formats_yml_is_proper_format_happy_path():
-    assert yml.Yml.is_proper_format(SIMPLE_SAMPLE_YML_INPUT)
-
-
-def test_translating_formats_yml_is_proper_format_with_invalid_content():
-    assert not yml.Yml.is_proper_format("@@")
+def test_translating_formats_json_is_proper_format_with_invalid_content():
+    assert not translating_json.Json.is_proper_format('{ "asd: asdf }')

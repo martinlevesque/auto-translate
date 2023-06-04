@@ -53,11 +53,8 @@ chunks, original_yaml = format.prepare_chunks(
 
 all_content = translating_formats.base.Base.concatenate_all_content(chunks)
 
-print(f"about source.")
 if not args.source_lang:
-    print("inn")
     args.source_lang = implementations.base.Base.determine_language(all_content) or "en"
-    print(f"source language: {args.source_lang}")
 
 # translate:
 
