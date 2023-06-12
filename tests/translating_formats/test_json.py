@@ -1,5 +1,6 @@
 from translating_formats import json as translating_json
 import json
+import copy
 
 
 SIMPLE_SAMPLE_JSON_INPUT = json.dumps(
@@ -87,6 +88,28 @@ def test_translating_formats_json_prepare_chunks_happy_path():
             ],
         },
     ]
+
+
+def test_translating_formats_json_format_final_yml():
+    formatter = translating_json.Json()
+
+    resulting_chunks, yml_loaded = formatter.prepare_chunks(SIMPLE_SAMPLE_JSON_INPUT, 10)
+    original_yaml = copy.deepcopy(yml_loaded)
+    resulting_chunks[0]["resolved_lines"] = ["frvalue1"]
+    resulting_chunks[1]["resolved_lines"] = ["frvalue2"]
+    resulting_chunks[2]["resolved_lines"] = ["frvalue3"]
+    resulting_chunks[3]["resolved_lines"] = ["frvalue4"]
+    resulting_chunks[4]["resolved_lines"] = ["frvalue5"]
+
+    result_yml = formatter.format_final_yml(resulting_chunks, yml_loaded)
+
+    original_yaml["alist"][0] = "frvalue2"
+    original_yaml["alist"][1] = "frvalue3"
+    original_yaml["deeplist"]["key4"][0]["kk"] = "frvalue4"
+    original_yaml["deeplist"]["key4"][0]["jj"] = "frvalue5"
+    original_yaml["key1"] = "frvalue1"
+
+    assert result_yml == json.dumps(original_yaml, indent=2, sort_keys=True)
 
 
 def test_translating_formats_json_is_proper_format_happy_path():

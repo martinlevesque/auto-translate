@@ -7,7 +7,9 @@ class Yml(Base):
     @staticmethod
     def is_proper_format(content):
         try:
+            print(f"checking yml..")
             yaml.safe_load(content)
+            print(f"looks ok checking yml..")
         except yaml.error.MarkedYAMLError as e:
             print(f"Issue reading yml content: {e}", file=sys.stderr)
             return False
