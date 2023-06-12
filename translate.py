@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 import implementations
 import pkgutil
 import importlib
@@ -15,24 +16,32 @@ cmd_line_parser.add_argument("--format", dest="format")
 
 args = cmd_line_parser.parse_args()
 
-stdin_content = sys.stdin.read()
+if not os.isatty(sys.stdin.fileno()):
+    stdin_content = sys.stdin.read()
+else:
+    # exit
+    print(cmd_line_parser.format_help(), file=sys.stderr)
+    sys.exit(1)
 
+
+
+def load_submodules(main_module):
+    return {
+        name: importlib.import_module("." + name, main_module.__name__)
+        for _, name, _ in pkgutil.iter_modules(main_module.__path__)
+    }
 
 # implementations:
+# define how translation is done based on various implementions in implementations/ folder
 
-submodules = {
-    name: importlib.import_module("." + name, implementations.__name__)
-    for _, name, _ in pkgutil.iter_modules(implementations.__path__)
-}
+submodules = load_submodules(implementations)
 
 implementation_submodule = submodules[args.implementation]
 
 # translating formats:
+# supported file formats
 
-format_submodules = {
-    name: importlib.import_module("." + name, translating_formats.__name__)
-    for _, name, _ in pkgutil.iter_modules(translating_formats.__path__)
-}
+format_submodules = load_submodules(translating_formats)
 
 if not args.format:
     # loop over format submodules:
@@ -43,6 +52,8 @@ if not args.format:
             args.format = name
             break
 
+######
+# Main
 
 translating_format = format_submodules[args.format]
 format = translating_format.Klass()
