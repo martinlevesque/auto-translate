@@ -17,7 +17,7 @@ The CLI can be used as follows:
 - `SOURCE_LANG` is the source language of the input file. If not specified, it will be auto-detected.
 - `TARGET_LANG` is the target language of the output file.
 - `IMPLEMENTATION` is the translation implementation to use, based on the implementions in `implementions/` folder.
-- `FORMAT` is the format of the input and output files. If not specified, it will be auto-detected.
+- `FORMAT` is the format of the input and output files. If not specified, it will be auto-detected. Available formats are based on the implementations in `translating_formats/` folder.
 
 And so an example usage is as follows:
 
